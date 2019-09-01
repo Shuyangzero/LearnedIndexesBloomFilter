@@ -11,10 +11,10 @@ from torch import nn
 
 def train():
     max_len = 60
-    embedding_dim = 50
+    embedding_dim = 32
     batch_size = 1024
-    lr = 0.001
-    epochs = 1
+    lr = 0.01
+    epochs = 30
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     with open('./data/dataset.json', 'r') as f:
         dataset = json.load(f)

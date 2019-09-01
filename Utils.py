@@ -81,9 +81,9 @@ def test_model(model, text_X, text_y):
     return total_correct / total, false_positives / total, false_negatives / total
 
 
-def evaluate_model(model, positives, negatives_train, negatives_dev, negatives_test, threshold):
+def evaluate_model(model, positives, negatives_train, negatives_dev, negatives_test, device, threshold):
     false_negatives = 0.0
-    preds = model.predicts(positives)
+    preds = model.predicts(positives, device)
     for pred in preds:
         if pred <= threshold:
             false_negatives += 1
@@ -91,19 +91,19 @@ def evaluate_model(model, positives, negatives_train, negatives_dev, negatives_t
     print(false_negatives / len(positives), "false negatives for positives set.")
 
     false_positives_train = 0.0
-    preds = model.predicts(negatives_train)
+    preds = model.predicts(negatives_train,device)
     for pred in preds:
         if pred > threshold:
          false_positives_train += 1
 
     false_positives_dev = 0.0
-    preds = model.predicts(negatives_dev)
+    preds = model.predicts(negatives_dev, device)
     for pred in preds:
         if pred > threshold:
          false_positives_dev += 1
 
     false_positives_test = 0.0
-    preds = model.predicts(negatives_test)
+    preds = model.predicts(negatives_test, device)
     for pred in preds:
         if pred > threshold:
          false_positives_test += 1

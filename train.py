@@ -48,3 +48,5 @@ if __name__ == '__main__':
             running_loss = loss.float()
             optimizer.step()
         print("loss is {}".format(running_loss/float(len(train_dataloader))))
+    
+    torch.save(model.state_dict(), "model.h5")

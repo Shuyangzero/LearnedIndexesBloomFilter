@@ -14,7 +14,7 @@ if __name__ == '__main__':
     lr = 0.01
     epochs = 1
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    with open('../data/dataset.json', 'r') as f:
+    with open('./data/dataset.json', 'r') as f:
         dataset = json.load(f)
     positives = dataset['positives']
     negatives = dataset['negatives']
@@ -30,7 +30,7 @@ if __name__ == '__main__':
         train_data, batch_size=batch_size, shuffle=True, num_workers=0)
     data_iterator = iter(train_dataloader)
     model = GRUModel(
-        '../data/glove.6B.50d-char.txt', embedding_dim, char_indices, indices_char)
+        './data/glove.6B.50d-char.txt', embedding_dim, char_indices, indices_char)
     model.to(device)
     optimizer = torch.optim.Adam(
         filter(lambda p: p.requires_grad, model.parameters()), lr=lr)

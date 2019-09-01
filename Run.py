@@ -36,7 +36,6 @@ def train():
     optimizer = torch.optim.Adam(
         filter(lambda p: p.requires_grad, model.parameters()), lr=lr)
     criterion = nn.BCELoss()
-    print(model.predicts(negatives_dev, device))
     for i in range(epochs):
         running_loss = 0
         for data in tqdm(train_dataloader):
@@ -50,7 +49,7 @@ def train():
             running_loss = loss.float()
             optimizer.step()
         print("loss is {}".format(running_loss/float(len(train_dataloader))))
-        print(model.predicts(negatives_dev))
+        #print(model.predicts(negatives_dev))
     torch.save(model, "model.h5")
 
 

@@ -3,6 +3,8 @@ import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
 import numpy as np
 import torch.nn.functional as func
+
+
 class GRUModel(nn.Module):
     def __init__(self, embeddings_path, embedding_dim, char_indices, indices_char, maxlen=60, hidden_size=16):
         super(GRUModel, self).__init__()
@@ -24,9 +26,9 @@ class GRUModel(nn.Module):
 
         embedding_matrix = np.zeros((self.num_chars + 1, self.embedding_dim))
         for char, i in self.char_indices.items():
-                embedding_vector = self.embedding_vectors.get(char)
-                assert(embedding_vector is not None)
-                embedding_matrix[i] = embedding_vector
+            embedding_vector = self.embedding_vectors.get(char)
+            assert(embedding_vector is not None)
+            embedding_matrix[i] = embedding_vector
 
         self.embeddings = nn.Embedding(self.num_chars + 1, self.embedding_dim)
         self.embeddings.weight.data.copy_(torch.from_numpy(embedding_matrix))
@@ -38,11 +40,11 @@ class GRUModel(nn.Module):
         self.fc3 = nn.Linear(4, 2)
         self.fc4 = nn.Linear(2, 1)
 
-    def forward(self,x):
+    def forward(self, x):
         x = self.embeddings(x)
-        x = x.permute(1,0,2)
+        x = x.permute(1, 0, 2)
         _, last_hidden = self.gru(x)
-        x = last_hidden.permute(1,2,0).squeeze(-1)
+        x = last_hidden.permute(1, 2, 0).squeeze(-1)
         x = self.fc1(x)
         x = func.relu(x)
         x = self.fc2(x)
@@ -52,3 +54,26 @@ class GRUModel(nn.Module):
         x = self.fc4(x)
         x = func.sigmoid(x)
         return x
+
+    def predict(self, text_x):
+        x = np.zeros((1, self.maxlen), dtype=np.int)
+        offset = max(self.maxlen - len(text_x), 0)
+        for t, char in enumerate(text_x):
+            if t >= self.maxlen:
+                break
+            x[0, t + offset] = self.char_indices[char]
+        pred = self.model(x)
+        return pred[0][0]
+
+    def predicts(self, text_X, device):
+        X = np.zeros((len(text_X), self.maxlen), dtype=np.int)
+        for i in range(len(text_X)):
+            offset = max(self.maxlen - len(text_X[i]), 0)
+            for t, char in enumerate(text_X[i]):
+                if t >= self.maxlen:
+                    break
+                X[i, t + offset] = self.char_indices[char]
+        
+        X = torch.from_numpy(X).to(device)
+        preds = [pred[0] for pred in self.forward(X)]
+        return preds

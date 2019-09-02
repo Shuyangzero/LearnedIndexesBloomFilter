@@ -28,6 +28,7 @@ def train(model, train_dataloader, lr=0.001):
         print("loss is {}".format(running_loss/float(len(train_dataloader))))
     torch.save(model, "model.h5")
 
+
 if __name__ == "__main__":
     train_mode = False
     max_len = 60
@@ -59,6 +60,5 @@ if __name__ == "__main__":
     else:
         model_path = "./model.h5"
         model = torch.load(model_path, map_location=device)
-
-    evaluate_model(model, positives, negatives_train,
-                   negatives_dev, negatives_test, device, threshold=0.5)
+    #model.predicts(negatives_dev, device)
+    evaluate_model(model, positives, negatives_train,negatives_dev, negatives_test, device, threshold = 0.5)

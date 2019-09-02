@@ -3,7 +3,8 @@ import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
 import numpy as np
 import torch.nn.functional as func
-
+from DataLoader import TestDataset
+from tqdm import tqdm
 
 class GRUModel(nn.Module):
     def __init__(self, embeddings_path, embedding_dim, char_indices, indices_char, maxlen=60, hidden_size=16):
@@ -65,7 +66,7 @@ class GRUModel(nn.Module):
         pred = self.model(x)
         return pred[0][0]
 
-    def predicts(self, text_X, device):
+    def predicts(self, text_X, device, batch_size=1024):
         X = np.zeros((len(text_X), self.maxlen), dtype=np.int)
         for i in range(len(text_X)):
             offset = max(self.maxlen - len(text_X[i]), 0)
@@ -74,6 +75,13 @@ class GRUModel(nn.Module):
                     break
                 X[i, t + offset] = self.char_indices[char]
         
-        X = torch.from_numpy(X).to(device)
-        preds = [pred[0] for pred in self.forward(X)]
+        dev_data = TestDataset(X)
+        dataloader = DataLoader(
+            dev_data, batch_size=batch_size, shuffle=True, num_workers=0)
+        preds = []
+        for x in tqdm(dataloader):
+            x.to(device)
+            out = self.forward(x)
+            out.detach().numpy()
+            preds.extend(list(out.detach().numpy().reshape((-1,))))
         return preds

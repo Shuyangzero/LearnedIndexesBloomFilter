@@ -14,3 +14,14 @@ class CharDataset(Dataset):
 
     def __getitem__(self, idx):
         return self.X[idx], self.Y[idx]
+
+
+class TestDataset(Dataset):
+    def __init__(self, X):
+        self.X = torch.from_numpy(X)
+
+    def __len__(self):
+        return len(self.X)
+
+    def __getitem__(self, idx):
+        return self.X[idx]

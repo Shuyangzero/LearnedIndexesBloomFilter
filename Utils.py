@@ -25,6 +25,7 @@ def split_negatives(data, train_portion=0.9):
     s2 = data.negatives[int(train_portion * size):]
     return (s1, s2)
 
+
 def vectorize_dataset(text_X, text_y, maxlen):
     # Adapted from Keras examples
     #print("Vectorizing data...")
